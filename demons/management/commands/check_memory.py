@@ -2,12 +2,16 @@ import subprocess
 
 from django.core.management.base import BaseCommand
 
+from demons.models import CheckMemoryModel
+
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        free_cmd = "free | grep Mem | awk '{print $4/$2 * 100.0}'"
+        free_cmd = "free -h | grep Mem | awk '{print $4}'"
         ps = subprocess.Popen(
             free_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
         output, _ = ps.communicate()
-        print(int(float(output.decode("utf-8").strip())))
+        value =f'free {output.decode("utf-8").strip()}'
+        data = CheckMemoryModel(memory_left=value)
+        data.save()
