@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "clientsviewer"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "gpl-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+djangorestframework = "3.14.0"
+django = "4.1.5"
+uvicorn = "^0.20.0"
+djangorestframework-simplejwt = {extras = ["crypto"], version = "^5.2.2"}
+pillow = "^9.4.0"
+celery = {extras = ["redis"], version = "^5.2.7"}
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+isort = "^5.11.4"
+mypy = "0.982"
+django-stubs = {extras = ["compatible-mypy"], version = "^1.13.1"}
+drf-spectacular = {extras = ["sidecar"], version = "^0.25.1"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "clientsviewer.settings"
