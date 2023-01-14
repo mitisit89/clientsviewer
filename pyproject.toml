@@ -20,6 +20,7 @@ isort = "^5.11.4"
 mypy = "0.982"
 django-stubs = {extras = ["compatible-mypy"], version = "^1.13.1"}
 drf-spectacular = {extras = ["sidecar"], version = "^0.25.1"}
+ipython = "^8.8.0"
 
 [build-system]
 requires = ["poetry-core"]
