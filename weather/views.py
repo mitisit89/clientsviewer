@@ -9,7 +9,11 @@ from .serializers import PostWeatherSerializer
 
 
 class GetWeather(APIView):
-    "Endpoint accept"
+    """
+    Endpoint receives a json object containing a user-defined date in format year-month-day and a city name. 
+    In response comes a json object containing weather data from external api
+    """
+
     weather_api_url: str = "https://api.open-meteo.com/v1/forecast?"
     weather_api_geo_coords_url: str = "https://geocoding-api.open-meteo.com/v1/search?"
     serializer_class = PostWeatherSerializer
