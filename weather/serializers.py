@@ -1,5 +1,4 @@
-from rest_framework.serializers import (CharField, DateField, DictField,
-                                        Serializer)
+from rest_framework.serializers import CharField, DateField, Serializer
 
 
 class PostWeatherSerializer(Serializer):
