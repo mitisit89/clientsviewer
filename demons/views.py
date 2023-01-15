@@ -11,13 +11,13 @@ from .serializers import MemoryCheckerSerializer
 
 class GetMemoryLeft(APIView):
     """
-    Assept get request,returns json array with date and amount of memory available on the host
+    Accept get request,returns json array with date and amount of memory available on the host
     """
 
     serializer_class = MemoryCheckerSerializer
 
     def get(self, request: Request) -> Response:
         with open(f"{BASE_DIR}/logs.json", "r", encoding="utf-8") as f:
-            memory_log = json.loads(f)
+            memory_log = json.load(f)
             result = MemoryCheckerSerializer(memory_log)
             return Response(result.data)
