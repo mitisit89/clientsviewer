@@ -22,7 +22,7 @@ class RegistrationUserModelSerializer(ModelSerializer[UserModel]):
             "sex",
             "birthday",
             "user_photo",
-            )
+        )
 
     def validate_email(self, value: str) -> str:
         print(value)
@@ -43,11 +43,11 @@ class RegistrationUserModelSerializer(ModelSerializer[UserModel]):
             name=validated_data["name"],
             email=validated_data["email"],
             password=validated_data["password"],
+            birthday=validated_data["birthday"]
+
         )
         user.surname = validated_data.get("surname", "")
         user.sex = validated_data.get("sex", "")
-        user.birthday = validated_data['birthday']
-        # user.user_photo = validated_data.get("user_photo",'')
         return user
 
 
