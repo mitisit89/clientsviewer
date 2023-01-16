@@ -43,7 +43,8 @@ class RegistrationUserModelSerializer(ModelSerializer[UserModel]):
             name=validated_data["name"],
             email=validated_data["email"],
             password=validated_data["password"],
-            birthday=validated_data["birthday"]
+            birthday=validated_data["birthday"],
+            user_photo=validated_data['user_photo']
 
         )
         user.surname = validated_data.get("surname", "")

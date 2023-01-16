@@ -7,9 +7,6 @@ from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-def upload_to(instance, filename):
-    return "images/{filename}".format(filename=filename)
-
 
 class UserModelManager(BaseUserManager):
     def create_user(
@@ -17,6 +14,7 @@ class UserModelManager(BaseUserManager):
         name: str,
         email: str,
         birthday,
+        user_photo,
         password: Optional[str] = None,
     ) -> "UserModel":
         if name is None:
@@ -24,7 +22,7 @@ class UserModelManager(BaseUserManager):
         if email is None:
             raise TypeError("Users must have an email address")
         user = self.model(
-            name=name, email=self.normalize_email(email), birthday=birthday
+            name=name, email=self.normalize_email(email), birthday=birthday,user_photo=user_photo
         )
         user.set_password(password)
         user.save()
@@ -56,7 +54,7 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     surname = models.CharField(max_length=150, db_index=True)
     sex = models.CharField(max_length=10, db_index=True)
     birthday = models.DateField()
-    user_photo = models.ImageField(upload_to=upload_to, null=True, blank=True)
+    user_photo = models.ImageField()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
