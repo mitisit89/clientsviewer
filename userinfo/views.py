@@ -1,7 +1,5 @@
-from typing import Any, Optional
+from typing import Any
 
-from django.conf import settings
-from django.shortcuts import get_list_or_404
 from rest_framework import parsers, status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -9,7 +7,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import UserModel
 from .renderers import UserJSONRenderer
 from .serializers import (LoginUserModelSerializer, LogoutSerializer,
                           RegistrationUserModelSerializer, UserModelSerializer)
@@ -19,10 +16,11 @@ class RegistrationApi(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
     serializer_class = RegistrationUserModelSerializer
+    parser_classes=(parsers.MultiPartParser,)
 
     def post(self, request: Request) -> Response:
         """Return user response after a successful registration."""
-        user_request = request.data.get("user", {})
+        user_request = request.data
         serializer = self.serializer_class(data=user_request)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -32,7 +30,7 @@ class RegistrationApi(APIView):
 class LoginApi(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
-    serializer_class = LogoutSerializer
+    serializer_class = LoginUserModelSerializer
 
     def post(self, request: Request) -> Response:
         """Return user after login."""
@@ -49,8 +47,6 @@ class UserRetrieveUpdateApi(RetrieveUpdateDestroyAPIView):
     serializer_class = UserModelSerializer
     lookup_url_kwarg = "id"
     parser_classes = [
-        parsers.JSONParser,
-        parsers.FormParser,
         parsers.MultiPartParser,
     ]
 
@@ -72,4 +68,17 @@ class UserRetrieveUpdateApi(RetrieveUpdateDestroyAPIView):
             user = serializer.save()
             return Response(UserModelSerializer(user).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+class LogoutAPIView(APIView):
+    serializer_class = LogoutSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request: Request) -> Response:
+        """Validate token and save."""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

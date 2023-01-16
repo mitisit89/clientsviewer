@@ -11,21 +11,21 @@ from .utils import email_is_valid
 
 class RegistrationUserModelSerializer(ModelSerializer[UserModel]):
     password = CharField(max_length=128, min_length=8, write_only=True)
-    user_photo = ImageField()
 
     class Meta:
         model = UserModel
-        fields = [
+        fields = (
             "email",
             "name",
             "password",
             "surname",
             "sex",
             "birthday",
-           'user_photo' 
-        ]
+            "user_photo",
+            )
 
     def validate_email(self, value: str) -> str:
+        print(value)
         valid, error_txt = email_is_valid(value)
         if not valid:
             raise ValidationError(error_txt)
@@ -38,15 +38,17 @@ class RegistrationUserModelSerializer(ModelSerializer[UserModel]):
         return value
 
     def create(self, validated_data) -> "UserModel":
+        print(validated_data)
         user = UserModel.objects.create_user(
             name=validated_data["name"],
             email=validated_data["email"],
             password=validated_data["password"],
-            user_photo=validated_data["user_photo"],
         )
         user.surname = validated_data.get("surname", "")
         user.sex = validated_data.get("sex", "")
-        user.birthday = validated_data("birthday", "")
+        user.birthday = validated_data['birthday']
+        # user.user_photo = validated_data.get("user_photo",'')
+        return user
 
 
 class LoginUserModelSerializer(ModelSerializer[UserModel]):
@@ -78,6 +80,7 @@ class LoginUserModelSerializer(ModelSerializer[UserModel]):
 
 class UserModelSerializer(ModelSerializer[UserModel]):
     password = CharField(max_length=128, min_length=8, write_only=True)
+    user_photo = ImageField(source="user_photo.photo")
 
     class Meta:
         model = UserModel

@@ -5,7 +5,8 @@ from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
-
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
 
 class UserModelManager(BaseUserManager):
     def create_user(
@@ -18,7 +19,7 @@ class UserModelManager(BaseUserManager):
             raise TypeError("Users must have a username.")
         if email is None:
             raise TypeError("Users must have an email address")
-        user = self.create_user(name, email, password)
+        user = self.model(name=name, email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
@@ -34,10 +35,10 @@ class UserModelManager(BaseUserManager):
         return user
 
 
-class UserPhoto(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    photo = models.ImageField(upload_to="images/")
-
+# class UserPhoto(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     photo = models.ImageField(upload_to=upload_to,null=True, blank=True)
+#
 
 class UserModel(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -47,8 +48,8 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=150, db_index=True)
     surname = models.CharField(max_length=150, db_index=True)
     sex = models.CharField(max_length=10, db_index=True)
-    birthday = models.DateTimeField()
-    user_photo = models.ForeignKey(UserPhoto, on_delete=models.CASCADE)
+    birthday= models.DateField()
+    user_photo = models.ImageField(upload_to=upload_to,null=True,blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]

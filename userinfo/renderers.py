@@ -15,7 +15,7 @@ class UserJSONRenderer(JSONRenderer):
         media_type: Optional[str] = None,
         renderer_context: Optional[Mapping[str, Any]] = None,
     ) -> str:
-        """Return a well formatted user jSON."""
+        """Return a well formatted user JSON."""
         errors = data.get("errors", None)
         token = data.get("token", None)
         if errors is not None:
