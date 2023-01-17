@@ -39,10 +39,10 @@ class UserModelManager(BaseUserManager):
         return user
 
 
-# class UserPhoto(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     photo = models.ImageField(upload_to=upload_to,null=True, blank=True)
-#
+class UserPhoto(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    photo = models.ImageField()
+
 
 
 class UserModel(AbstractBaseUser, PermissionsMixin):
@@ -54,12 +54,12 @@ class UserModel(AbstractBaseUser, PermissionsMixin):
     surname = models.CharField(max_length=150, db_index=True)
     sex = models.CharField(max_length=10, db_index=True)
     birthday = models.DateField()
-    user_photo = models.ImageField()
+    user_photo = models.ForeignKey(UserPhoto, on_delete=models.CASCADE)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
     objects = UserModelManager()
-
+    
     @property
     def tokens(self) -> dict[str, str]:
         refresh_token = RefreshToken.for_user(self)
