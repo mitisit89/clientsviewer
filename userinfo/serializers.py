@@ -53,7 +53,7 @@ class RegistrationUserSerializer(ModelSerializer[User]):
             sex=validated_data.get('sex','')
         )
         photo=UserPhoto.objects.create(user=user, photo=validated_data.get('photo',''))
-        return photo,user
+        return user
         
 
 class LoginUserSerializer(ModelSerializer[User]):
