@@ -24,6 +24,9 @@ INSTALLED_APPS = [
     "weather",
     "demons",
 ]
+SPECTACULAR_DEFAULTS={
+     'COMPONENT_SPLIT_REQUEST': True,
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -116,5 +119,6 @@ STATICFILES_DIRS = [
 ]
 MEDIA_ROOT = f"{BASE_DIR}/media"
 MEDIA_URL = "/media/"
-AUTH_USER_MODEL = "userinfo.UserModel"
+AUTH_USER_MODEL = "userinfo.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+COMPONENT_SPLIT_REQUEST = True
