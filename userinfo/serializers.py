@@ -1,17 +1,21 @@
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import (CharField, ImageField, ModelSerializer,
-                                        SerializerMethodField, ValidationError,Serializer)
+                                        SerializerMethodField, ValidationError,Serializer,ListField)
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from functools import reduce
 
 from .models import User,UserPhoto
 from .utils import email_is_valid
 
-
+class UserPhotoSerializer(ModelSerializer[UserPhoto]):
+    class Meta:
+        model=UserPhoto
+        fields=['photo']
 
 class RegistrationUserSerializer(ModelSerializer[User]):
     password = CharField(max_length=128, min_length=8, write_only=True)
-    photo =ImageField(source='user.photo')
+    photo =ImageField(write_only=True)
 
     class Meta:
         model = User
@@ -45,13 +49,11 @@ class RegistrationUserSerializer(ModelSerializer[User]):
             email=validated_data["email"],
             password=validated_data["password"],
             birthday=validated_data["birthday"],
-
+            surname=validated_data.get('surname',''),
+            sex=validated_data.get('sex','')
         )
         photo=UserPhoto.objects.create(user=user, photo=validated_data.get('photo',''))
-        user.surname = validated_data.get("surname", "")
-        user.sex = validated_data.get("sex", "")
-
-        return user,photo
+        return photo.save(),user.save()
 
 class LoginUserSerializer(ModelSerializer[User]):
     email = CharField(max_length=255)

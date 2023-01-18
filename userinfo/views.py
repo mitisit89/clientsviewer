@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from drf_spectacular.utils import extend_schema
 from .renderers import UserJSONRenderer
 from .serializers import (LoginUserSerializer, LogoutSerializer,
                           RegistrationUserSerializer, UserSerializer)
@@ -23,9 +23,8 @@ class RegistrationApi(APIView):
         user_request = request.data
         serializer = self.serializer_class(data=user_request)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer.create(user_request)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class LoginApi(APIView):

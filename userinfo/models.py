@@ -12,6 +12,8 @@ class UserManager(BaseUserManager):
             self,
             name: str,
             email: str,
+            sex:str,
+            surname:str,
             birthday,
 
             password: Optional[str] = None,
@@ -21,7 +23,7 @@ class UserManager(BaseUserManager):
         if email is None:
             raise TypeError("Users must have an email address")
         user = self.model(
-            name=name, email=self.normalize_email(email), birthday=birthday
+            name=name, email=self.normalize_email(email), birthday=birthday,sex=sex,surname=surname
         )
         user.set_password(password)
         user.save()
