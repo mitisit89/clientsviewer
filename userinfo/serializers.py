@@ -1,36 +1,30 @@
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import (CharField, ImageField, ModelSerializer,
-                                        PrimaryKeyRelatedField, Serializer,
-                                        SerializerMethodField, ValidationError)
+                                        SerializerMethodField, ValidationError,Serializer)
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-from .models import UserModel, UserPhoto
+from .models import User,UserPhoto
 from .utils import email_is_valid
 
 
-class UserPhotoSerializer(ModelSerializer[UserPhoto]):
-    photo=ImageField()
-    class Meta:
-        model = UserPhoto
-        fields = ("photo", )
 
-
-class RegistrationUserModelSerializer(ModelSerializer[UserModel]):
+class RegistrationUserSerializer(ModelSerializer[User]):
     password = CharField(max_length=128, min_length=8, write_only=True)
-    user_photo = UserPhotoSerializer(many=True)
+    photo =ImageField(source='user.photo')
 
     class Meta:
-        model = UserModel
-        fields = (
+        model = User
+        fields = [
             "email",
             "name",
             "password",
             "surname",
             "sex",
             "birthday",
-            "user_photo",
-        )
+            'photo'
+
+        ]
 
     def validate_email(self, value: str) -> str:
         valid, error_txt = email_is_valid(value)
@@ -44,35 +38,36 @@ class RegistrationUserModelSerializer(ModelSerializer[UserModel]):
             value = "@".join([email_name, domain_part.lower()])
         return value
 
-    def create(self, validated_data) -> "UserModel":
+    def create(self, validated_data) -> "User":
         print(validated_data)
-        user = UserModel.objects.create_user(
+        user = User.objects.create_user(
             name=validated_data["name"],
             email=validated_data["email"],
             password=validated_data["password"],
             birthday=validated_data["birthday"],
-            user_photo=validated_data['user_photo']
+
         )
+        photo=UserPhoto.objects.create(user=user, photo=validated_data.get('photo',''))
         user.surname = validated_data.get("surname", "")
         user.sex = validated_data.get("sex", "")
-        return user
 
+        return user,photo
 
-class LoginUserModelSerializer(ModelSerializer[UserModel]):
+class LoginUserSerializer(ModelSerializer[User]):
     email = CharField(max_length=255)
     name = CharField(max_length=255, read_only=True)
     password = CharField(max_length=128, write_only=True)
     tokens = SerializerMethodField()
 
     def get_tokens(self, obj) -> dict[str, str]:
-        user = UserModel.objects.get(email=obj.email)
+        user = User.objects.get(email=obj.email)
         return {
             "refresh": user.tokens["refresh"],
             "access": user.tokens["access"]
         }
 
     class Meta:
-        model = UserModel
+        model = User
         fields = ["email", "name", "password", "tokens"]
 
     def validate(self, data: dict[str, str]):
@@ -89,13 +84,13 @@ class LoginUserModelSerializer(ModelSerializer[UserModel]):
         return user
 
 
-class UserModelSerializer(ModelSerializer[UserModel]):
+class UserSerializer(ModelSerializer[User]):
     password = CharField(max_length=128, min_length=8, write_only=True)
-    user_photo = ImageField(source="user_photo.photo")
+    photo = ImageField()
 
     class Meta:
-        model = UserModel
-        fields = (
+        model = User
+        fields = [
             "id",
             "email",
             "name",
@@ -104,12 +99,12 @@ class UserModelSerializer(ModelSerializer[UserModel]):
             "surname",
             "sex",
             "birthday",
-            "user_photo",
+            'photo',
             "is_staff",
-        )
+        ]
         read_only_fields = ("tokens", "if_staff")
 
-    def update(self, instanse: UserModel, validated_data):
+    def update(self, instanse: User, validated_data):
         password = validated_data.pop("password", None)
         for (key, value) in validated_data.items():
             setattr(instanse, key, value)
@@ -120,7 +115,7 @@ class UserModelSerializer(ModelSerializer[UserModel]):
         return instanse
 
 
-class LogoutSerializer(Serializer[UserModel]):
+class LogoutSerializer(Serializer[User]):
     refresh = CharField()
 
     def validate(self, attrs):
