@@ -23,7 +23,7 @@ class RegistrationApi(APIView):
         user_request = request.data
         serializer = self.serializer_class(data=user_request)
         if serializer.is_valid(raise_exception=True):
-            serializer.create(user_request)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

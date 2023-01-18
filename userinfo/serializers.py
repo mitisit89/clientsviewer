@@ -53,7 +53,8 @@ class RegistrationUserSerializer(ModelSerializer[User]):
             sex=validated_data.get('sex','')
         )
         photo=UserPhoto.objects.create(user=user, photo=validated_data.get('photo',''))
-        return photo.save(),user.save()
+        return photo,user
+        
 
 class LoginUserSerializer(ModelSerializer[User]):
     email = CharField(max_length=255)
