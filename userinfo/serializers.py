@@ -3,15 +3,10 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import (CharField, ImageField, ModelSerializer,
                                         SerializerMethodField, ValidationError,Serializer,ListField)
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-from functools import reduce
 
 from .models import User,UserPhoto
 from .utils import email_is_valid
 
-class UserPhotoSerializer(ModelSerializer[UserPhoto]):
-    class Meta:
-        model=UserPhoto
-        fields=['photo']
 
 class RegistrationUserSerializer(ModelSerializer[User]):
     password = CharField(max_length=128, min_length=8, write_only=True)
