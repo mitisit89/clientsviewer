@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.serializers import (CharField, ImageField, ModelSerializer,
-                                        SerializerMethodField, ValidationError,Serializer,ListField)
+                                        SerializerMethodField, ValidationError,Serializer)
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from .models import User,UserPhoto
@@ -38,7 +38,6 @@ class RegistrationUserSerializer(ModelSerializer[User]):
         return value
 
     def create(self, validated_data) -> "User":
-        print(validated_data)
         user = User.objects.create_user(
             name=validated_data["name"],
             email=validated_data["email"],
@@ -86,7 +85,6 @@ class LoginSerializer(ModelSerializer[User]):
 
 class UserSerializer(ModelSerializer[User]):
     password = CharField(max_length=128, min_length=8, write_only=True)
-    photo = ImageField()
 
     class Meta:
         model = User
@@ -99,7 +97,6 @@ class UserSerializer(ModelSerializer[User]):
             "surname",
             "sex",
             "birthday",
-            'photo',
             "is_staff",
         ]
         read_only_fields = ("tokens", "if_staff")
@@ -113,6 +110,7 @@ class UserSerializer(ModelSerializer[User]):
             instanse.set_password(password)
         instanse.save()
         return instanse
+
 
 
 class LogoutSerializer(Serializer[User]):

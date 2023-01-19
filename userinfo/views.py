@@ -53,6 +53,7 @@ class LoginApi(APIView):
 class UserList(ListAPIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
+    queryset=User
 
     def get(self, request: Request) -> Response:
         pass
@@ -69,43 +70,23 @@ class UpdateUserPhoto(APIView):
 class UpdateUser(APIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
-    lookup_url_kwarg = "id"
-    parser_classes = (UserJSONRenderer,)
+    parser_classes = (parsers.JSONParser,parsers.FormParser,)
     serializer_class = UserSerializer
 
     def patch(
+        
         self, request: Request, *args: type(Any), **kwargs: dict[str, Any]
     ) -> Response:
+        """partial update user data"""
+        #fix schema add user in schema
         serializer_data = request.data.get("user", {})
         serializer = UserSerializer(request.user, data=serializer_data, partial=True)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(UserSerializer(user).data)
+            return Response(UserSerializer(user).data,status=HTTP_201_CREATED)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-# class UserRetrieveUpdateApi(RetrieveUpdateDestroyAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     renderer_classes = (UserJSONRenderer,)
-#     serializer_class = UserSerializer
-#     lookup_url_kwarg = "id"
-#     parser_classes = [
-#         parsers.MultiPartParser,
-#     ]
-#
-#
-#
-#     def patch(
-#         self, request: Request, *args: type(Any), **kwargs: dict[str, Any]
-#     ) -> Response:
-#         serializer_data = request.data.get("user", {})
-#         serializer = UserSerializer(request.user, data=serializer_data, partial=True)
-#         if serializer.is_valid():
-#             user = serializer.save()
-#             return Response(UserSerializer(user).data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#
 class DeleteUser(APIView):
     permission_classes = (IsAuthenticated,)
 
