@@ -51,7 +51,7 @@ class RegistrationUserSerializer(ModelSerializer[User]):
         return user
         
 
-class LoginUserSerializer(ModelSerializer[User]):
+class LoginSerializer(ModelSerializer[User]):
     email = CharField(max_length=255)
     name = CharField(max_length=255, read_only=True)
     password = CharField(max_length=128, write_only=True)

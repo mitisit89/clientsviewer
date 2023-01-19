@@ -30,7 +30,7 @@ class RegistrationApi(APIView):
 class LoginApi(APIView):
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
-    serializer_class = LoginUserSerializer
+    serializer_class = LoginSerializer
 
     def post(self, request: Request) -> Response:
         """Return user after login."""
