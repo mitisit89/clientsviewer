@@ -1,10 +1,13 @@
 from typing import Any
 
-from rest_framework import parsers, status
-from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from drf_spectacular.utils import extend_schema
+from rest_framework import parsers
+from rest_framework.generics import DestroyAPIView, ListAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_400_BAD_REQUEST)
 from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
 from .renderers import UserJSONRenderer
@@ -24,7 +27,7 @@ class RegistrationApi(APIView):
         serializer = self.serializer_class(data=user_request)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
 
 
 class LoginApi(APIView):
@@ -40,8 +43,8 @@ class LoginApi(APIView):
         }
         serializer = self.serializer_class(data=user)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=HTTP_200_OK)
 
 
 class UserRetrieveUpdateApi(RetrieveUpdateDestroyAPIView):
