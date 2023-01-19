@@ -78,6 +78,8 @@ class LoginUserSerializer(ModelSerializer[User]):
         password = data.get("password", None)
         if email is None:
             raise ValidationError("An email address is required to log in.")
+        if password is None:
+            raise ValidationError("A password is required to log in")
         user = authenticate(username=email, password=password)
         if user is None:
             raise ValidationError(
