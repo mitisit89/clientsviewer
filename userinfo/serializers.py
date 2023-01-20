@@ -20,7 +20,6 @@ class UserListSerializer(serializers.Serializer):
     read_only_fields = ["id"]
 
 
-
 class RegistrationUserSerializer(serializers.ModelSerializer[User]):
     password = serializers.CharField(max_length=128, min_length=8, write_only=True)
     photo = serializers.ImageField(write_only=True, use_url=True)
@@ -79,7 +78,9 @@ class LoginSerializer(serializers.ModelSerializer[User]):
             raise serializers.ValidationError("A password is required to log in")
         user = authenticate(username=email, password=password)
         if user is None:
-            raise serializers.ValidationError("A user with this email and password was not found")
+            raise serializers.ValidationError(
+                "A user with this email and password was not found"
+            )
         if not user.is_active:
             raise serializers.ValidationError("This user is not currently activated.")
         return user
@@ -87,7 +88,8 @@ class LoginSerializer(serializers.ModelSerializer[User]):
 
 class UserSerializer(serializers.ModelSerializer[User]):
     password = serializers.CharField(max_length=128, min_length=8, write_only=True)
-    photo=serializers.ImageField(write_only=True,use_url=True)
+    photo = serializers.ImageField(write_only=True, use_url=True)
+
     class Meta:
         model = User
         fields = [
@@ -107,16 +109,16 @@ class UserSerializer(serializers.ModelSerializer[User]):
     def update(self, instance: User, validated_data):
         password = validated_data.pop("password", None)
         print(validated_data)
-        photo=validated_data.pop('photo',None)
+        photo = validated_data.pop("photo", None)
         for (key, value) in validated_data.items():
             setattr(instance, key, value)
 
         if password is not None:
             instance.set_password(password)
         if photo is not None:
-            q=UserPhoto.objects.get(user=instance.id)
-            q.photo=photo
-            q.save() 
+            q = UserPhoto.objects.get(user=instance.id)
+            q.photo = photo
+            q.save()
         instance.save()
         return instance
 

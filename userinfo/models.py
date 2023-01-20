@@ -1,29 +1,35 @@
 import uuid
 from typing import Optional
 import PIL
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
-                                        PermissionsMixin)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserManager(BaseUserManager):
     def create_user(
-            self,
-            name: str,
-            email: str,
-            sex:str,
-            surname:str,
-            birthday,
-
-            password: Optional[str] = None,
+        self,
+        name: str,
+        email: str,
+        sex: str,
+        surname: str,
+        birthday,
+        password: Optional[str] = None,
     ) -> "User":
         if name is None:
             raise TypeError("Users must have a username.")
         if email is None:
             raise TypeError("Users must have an email address")
         user = self.model(
-            name=name, email=self.normalize_email(email), birthday=birthday,sex=sex,surname=surname
+            name=name,
+            email=self.normalize_email(email),
+            birthday=birthday,
+            sex=sex,
+            surname=surname,
         )
         user.set_password(password)
         user.save()
@@ -63,15 +69,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserPhoto(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='img',null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="img", null=True
+    )
     photo = models.ImageField()
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         img = PIL.Image.open(self.photo)
         width, height = img.size
         target_width = 400
-        h_coefficient = width/600
-        target_height = height/h_coefficient
+        h_coefficient = width / 600
+        target_height = height / h_coefficient
         img = img.resize((int(target_width), int(target_height)), PIL.Image.ANTIALIAS)
         img.save(self.photo.path, quality=100)
         img.close()

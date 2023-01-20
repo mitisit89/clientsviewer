@@ -14,6 +14,8 @@ class Command(BaseCommand):
             free_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
         output, _ = ps.communicate()
-        log = {'content':[str(datetime.now()), f'free {output.decode("utf-8").strip()}']}
+        log = {
+            "content": [str(datetime.now()), f'free {output.decode("utf-8").strip()}']
+        }
         with open("logs.json", "w", encoding="utf-8") as f:
             json.dump(log, f)

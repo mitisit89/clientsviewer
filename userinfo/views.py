@@ -90,10 +90,9 @@ class UserList(ListAPIView):
 class UpdateUser(APIView):
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
-    parser_classes = (
-    parsers.MultiPartParser,
-    )
+    parser_classes = (parsers.MultiPartParser,)
     serializer_class = UserSerializer
+
     def patch(
         self, request: Request, *args: type(Any), **kwargs: dict[str, Any]
     ) -> Response:
