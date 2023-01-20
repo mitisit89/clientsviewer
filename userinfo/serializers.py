@@ -1,34 +1,38 @@
+from abc import ABC
+
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.serializers import (CharField, ImageField, ModelSerializer,
-                                        SerializerMethodField, ValidationError,Serializer)
+from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-from .models import User,UserPhoto
+from .models import User, UserPhoto
 from .utils import email_is_valid
 
 
-class RegistrationUserSerializer(ModelSerializer[User]):
-    password = CharField(max_length=128, min_length=8, write_only=True)
-    photo =ImageField(write_only=True)
+
+class UserListSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    email = serializers.EmailField()
+    name = serializers.CharField()
+    surname = serializers.CharField()
+    sex = serializers.CharField
+    birthday = serializers.DateField()
+    photo = serializers.CharField()
+    read_only_fields = ["id"]
+
+
+class RegistrationUserSerializer(serializers.ModelSerializer[User]):
+    password = serializers.CharField(max_length=128, min_length=8, write_only=True)
+    photo = serializers.ImageField(write_only=True, use_url=True)
 
     class Meta:
         model = User
-        fields = [
-            "email",
-            "name",
-            "password",
-            "surname",
-            "sex",
-            "birthday",
-            'photo'
-
-        ]
+        fields = ["email", "name", "password", "surname", "sex", "birthday", "photo"]
 
     def validate_email(self, value: str) -> str:
         valid, error_txt = email_is_valid(value)
         if not valid:
-            raise ValidationError(error_txt)
+            raise serializers.ValidationError(error_txt)
         try:
             email_name, domain_part = value.strip().rsplit("@", 1)
         except ValueError:
@@ -43,25 +47,24 @@ class RegistrationUserSerializer(ModelSerializer[User]):
             email=validated_data["email"],
             password=validated_data["password"],
             birthday=validated_data["birthday"],
-            surname=validated_data.get('surname',''),
-            sex=validated_data.get('sex','')
+            surname=validated_data.get("surname", ""),
+            sex=validated_data.get("sex", ""),
         )
-        photo=UserPhoto.objects.create(user=user, photo=validated_data.get('photo',''))
+        photo = UserPhoto.objects.create(
+            user=user, photo=validated_data.get("photo", "")
+        )
         return user
-        
 
-class LoginSerializer(ModelSerializer[User]):
-    email = CharField(max_length=255)
-    name = CharField(max_length=255, read_only=True)
-    password = CharField(max_length=128, write_only=True)
-    tokens = SerializerMethodField()
+
+class LoginSerializer(serializers.ModelSerializer[User]):
+    email = serializers.CharField(max_length=255)
+    name = serializers.CharField(max_length=255, read_only=True)
+    password = serializers.CharField(max_length=128, write_only=True)
+    tokens = serializers.SerializerMethodField()
 
     def get_tokens(self, obj) -> dict[str, str]:
         user = User.objects.get(email=obj.email)
-        return {
-            "refresh": user.tokens["refresh"],
-            "access": user.tokens["access"]
-        }
+        return {"refresh": user.tokens["refresh"], "access": user.tokens["access"]}
 
     class Meta:
         model = User
@@ -71,20 +74,19 @@ class LoginSerializer(ModelSerializer[User]):
         email = data.get("email", None)
         password = data.get("password", None)
         if email is None:
-            raise ValidationError("An email address is required to log in.")
+            raise serializers.ValidationError("An email address is required to log in.")
         if password is None:
-            raise ValidationError("A password is required to log in")
+            raise serializers.ValidationError("A password is required to log in")
         user = authenticate(username=email, password=password)
         if user is None:
-            raise ValidationError(
-                "A user with this email and password was not found")
+            raise serializers.ValidationError("A user with this email and password was not found")
         if not user.is_active:
-            raise ValidationError("This user is not currently activated.")
+            raise serializers.ValidationError("This user is not currently activated.")
         return user
 
 
-class UserSerializer(ModelSerializer[User]):
-    password = CharField(max_length=128, min_length=8, write_only=True)
+class UserSerializer(serializers.ModelSerializer[User]):
+    password = serializers.CharField(max_length=128, min_length=8, write_only=True)
 
     class Meta:
         model = User
@@ -112,9 +114,14 @@ class UserSerializer(ModelSerializer[User]):
         return instanse
 
 
+class DeleteSerializer(serializers.ModelSerializer[User]):
+    class Meta:
+        model = User
+        fields = "_all_"
 
-class LogoutSerializer(Serializer[User]):
-    refresh = CharField()
+
+class LogoutSerializer(serializers.Serializer[User]):
+    refresh = serializers.CharField()
 
     def validate(self, attrs):
         self.token = attrs["refresh"]

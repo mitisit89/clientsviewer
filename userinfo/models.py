@@ -63,5 +63,5 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserPhoto(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='img',null=True)
     photo = models.ImageField()
