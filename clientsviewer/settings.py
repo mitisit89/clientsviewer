@@ -23,9 +23,7 @@ INSTALLED_APPS = [
     "weather",
     "demons",
 ]
-SPECTACULAR_DEFAULTS={
-     
-}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
