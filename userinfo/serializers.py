@@ -9,7 +9,6 @@ from .models import User, UserPhoto
 from .utils import email_is_valid
 
 
-
 class UserListSerializer(serializers.Serializer):
     id = serializers.CharField()
     email = serializers.EmailField()
@@ -19,6 +18,7 @@ class UserListSerializer(serializers.Serializer):
     birthday = serializers.DateField()
     photo = serializers.CharField()
     read_only_fields = ["id"]
+
 
 
 class RegistrationUserSerializer(serializers.ModelSerializer[User]):
@@ -87,7 +87,7 @@ class LoginSerializer(serializers.ModelSerializer[User]):
 
 class UserSerializer(serializers.ModelSerializer[User]):
     password = serializers.CharField(max_length=128, min_length=8, write_only=True)
-
+    photo=serializers.ImageField(write_only=True,use_url=True)
     class Meta:
         model = User
         fields = [
@@ -99,17 +99,23 @@ class UserSerializer(serializers.ModelSerializer[User]):
             "surname",
             "sex",
             "birthday",
+            "photo",
             "is_staff",
         ]
         read_only_fields = ("tokens", "if_staff")
 
     def update(self, instanse: User, validated_data):
         password = validated_data.pop("password", None)
+        print(validated_data)
+        photo=validated_data.pop('photo',None)
+        print(photo)
         for (key, value) in validated_data.items():
             setattr(instanse, key, value)
 
         if password is not None:
             instanse.set_password(password)
+        if photo is not None:
+            UserPhoto.objects.filter(user=instanse).update(photo=photo)
         instanse.save()
         return instanse
 
