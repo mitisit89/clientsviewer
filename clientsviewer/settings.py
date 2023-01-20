@@ -19,13 +19,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
-    "drf_spectacular_sidecar",
     "userinfo",
     "weather",
     "demons",
 ]
 SPECTACULAR_DEFAULTS={
-     'COMPONENT_SPLIT_REQUEST': True,
+     
 }
 
 MIDDLEWARE = [
@@ -121,4 +120,3 @@ MEDIA_ROOT = f"{BASE_DIR}/media"
 MEDIA_URL = "/media/"
 AUTH_USER_MODEL = "userinfo.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-COMPONENT_SPLIT_REQUEST = True

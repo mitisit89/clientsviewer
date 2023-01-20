@@ -2,6 +2,7 @@ from typing import Any
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import parsers
+from rest_framework import renderers
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -93,27 +94,10 @@ class UpdateUser(APIView):
     parsers.MultiPartParser,
     )
     serializer_class = UserSerializer
-
-    @extend_schema(
-         request={
-             "multipart/form-data": {
-                 "type": "object",
-                 "user": {
-                     "email": {"type": "string",'format':'email'},
-                     "name": {"type": "string"},
-                     "password": {"type": "string","format":'password'},
-                     "surname": {"type": "string"},
-                     "sex": {"type": "string"},
-                     "birthday": {"type": "string",'format':'date'},
-                     "photo": {"type": "string", "format": "binary"},
-                 },
-             }
-         },
-     )
     def patch(
         self, request: Request, *args: type(Any), **kwargs: dict[str, Any]
     ) -> Response:
-        """partial update user data"""
+        """Partial update user data"""
         # fix schema add user in schema
         serializer_data = request.data
         serializer = UserSerializer(request.user, data=serializer_data, partial=True)

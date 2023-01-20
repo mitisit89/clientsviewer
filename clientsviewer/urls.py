@@ -8,9 +8,9 @@ from weather import urls as weather_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("docs/schema/", SpectacularAPIView.as_view(  custom_settings={'COMPONENT_SPLIT_REQUEST': True}), name="schema"),
     path(
-        "api/schema/swagger-ui/",
+        "docs",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
