@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional
-
+import PIL
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
@@ -65,3 +65,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserPhoto(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='img',null=True)
     photo = models.ImageField()
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        img = PIL.Image.open(self.photo)
+        width, height = img.size
+        target_width = 400
+        h_coefficient = width/600
+        target_height = height/h_coefficient
+        img = img.resize((int(target_width), int(target_height)), PIL.Image.ANTIALIAS)
+        img.save(self.photo.path, quality=100)
+        img.close()
+        self.photo.close()
