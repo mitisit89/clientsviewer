@@ -104,20 +104,21 @@ class UserSerializer(serializers.ModelSerializer[User]):
         ]
         read_only_fields = ("tokens", "if_staff")
 
-    def update(self, instanse: User, validated_data):
+    def update(self, instance: User, validated_data):
         password = validated_data.pop("password", None)
         print(validated_data)
         photo=validated_data.pop('photo',None)
-        print(photo)
         for (key, value) in validated_data.items():
-            setattr(instanse, key, value)
+            setattr(instance, key, value)
 
         if password is not None:
-            instanse.set_password(password)
+            instance.set_password(password)
         if photo is not None:
-            UserPhoto.objects.filter(user=instanse).update(photo=photo)
-        instanse.save()
-        return instanse
+            q=UserPhoto.objects.get(user=instance.id)
+            q.photo=photo
+            q.save() 
+        instance.save()
+        return instance
 
 
 class DeleteSerializer(serializers.ModelSerializer[User]):
