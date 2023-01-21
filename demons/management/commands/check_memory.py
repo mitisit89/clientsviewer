@@ -9,7 +9,7 @@ logs: list[[str]] = []
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        free_cmd = "free -h | grep Mem | awk '{print $4}'"
+        free_cmd = "free -h | grep Mem | awk '{print $7}'"
         ps = subprocess.Popen(
             free_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
