@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 
 from clientsviewer.settings import BASE_DIR
 
+
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         free_cmd = "free -h | grep Mem | awk '{print $7}'"

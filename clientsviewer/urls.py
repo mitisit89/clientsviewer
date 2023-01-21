@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-
 from demons import urls as demons_urls
 from userinfo import urls as userinfo_urls
 from weather import urls as weather_urls
