@@ -6,8 +6,7 @@ SECRET_KEY = "django-insecure-u)wp0p+2p*s%n44natue3-!sc-ja0budr(=*)%2y@x$_65(@sk
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -23,7 +22,6 @@ INSTALLED_APPS = [
     "weather",
     "demons",
 ]
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -91,16 +89,6 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Your Project API",
-    "DESCRIPTION": "Your project description",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
-    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
-    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
-    "REDOC_DIST": "SIDECAR",
-}
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -110,10 +98,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    "/var/www/static/",
-]
+STATIC_ROOT= f'{BASE_DIR}/static'
+
 MEDIA_ROOT = f"{BASE_DIR}/media"
 MEDIA_URL = "/media/"
 AUTH_USER_MODEL = "userinfo.User"
