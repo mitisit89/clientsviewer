@@ -1,11 +1,8 @@
-import uuid
 from typing import Optional
+
 import PIL
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -50,9 +47,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(db_index=True, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    name = models.CharField(max_length=150, db_index=True)
-    surname = models.CharField(max_length=150, db_index=True)
-    sex = models.CharField(max_length=10, db_index=True)
+    name = models.CharField(max_length=150)
+    surname = models.CharField(max_length=150)
+    sex = models.CharField(max_length=10)
     birthday = models.DateField()
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
@@ -68,6 +65,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserPhoto(models.Model):
+    CROP_TARGET = 400
+
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="img", null=True
     )
@@ -77,10 +76,11 @@ class UserPhoto(models.Model):
         super().save(*args, **kwargs)
         img = PIL.Image.open(self.photo)
         width, height = img.size
-        target_width = 400
-        h_coefficient = width / 600
-        target_height = height / h_coefficient
-        img = img.resize((int(target_width), int(target_height)), PIL.Image.ANTIALIAS)
+        crop_coefficient = width / 600
+        target_height = height / crop_coefficient
+        img = img.resize(
+            (int(self.CROP_TARGET), int(target_height)), PIL.Image.ANTIALIAS
+        )
         img.save(self.photo.path, quality=100)
         img.close()
         self.photo.close()
