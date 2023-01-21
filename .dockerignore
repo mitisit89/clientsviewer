@@ -1,3 +1,7 @@
 poetry.lock
 __pycache__/
 .git
+.gitignore 
+*.toml
+media/*
+*.sqlite3 
