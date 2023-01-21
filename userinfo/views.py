@@ -72,7 +72,7 @@ class UserList(ListAPIView):
         queryset = User.objects.prefetch_related("img").all()
         users: list[dict[str, Any]] = []
         for user in queryset:
-            photos = [photo.photo.url for photo in user.img.all()]
+            photos = user.img.all().first() or user.img.all().last()
             users.append(
                 {
                     "id": user.id,
@@ -81,7 +81,7 @@ class UserList(ListAPIView):
                     "surname": user.surname,
                     "sex": user.sex,
                     "birthday": user.birthday,
-                    "photo": photos[0],
+                    "photo": photos,
                 }
             )
         return users
