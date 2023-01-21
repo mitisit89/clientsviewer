@@ -1,6 +1,5 @@
 import requests
 from rest_framework import status
-from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +17,9 @@ class WeatherHandler:
 
     def get_geo_coords(self) -> list[float, ...]:
         params = {"name": str(self.city), "count": 1}
-        req = requests.get(self.weather_api_geo_coords_url, params=params).json()
+        req = requests.get(
+            self.weather_api_geo_coords_url, params=params, timeout=10
+        ).json()
         data = (req.get("results")[0].get(key) for key in ("latitude", "longitude"))
         return data
 
@@ -32,7 +33,7 @@ class WeatherHandler:
             "start_date": self.day,
             "end_date": self.day,
         }
-        data = requests.get(url=self.weather_api_url, params=params).json()
+        data = requests.get(url=self.weather_api_url, params=params, timeout=10).json()
         return data
 
 
