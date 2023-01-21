@@ -14,7 +14,7 @@ uvicorn = "^0.20.0"
 djangorestframework-simplejwt = {extras = ["crypto"], version = "^5.2.2"}
 pillow = "^9.4.0"
 requests = "^2.28.2"
-drf-spectacular = {extras = ["sidecar"], version = "^0.25.1"}
+drf-spectacular = "^0.25.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
