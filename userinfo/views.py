@@ -1,30 +1,21 @@
 from typing import Any
 
 from drf_spectacular.utils import extend_schema
-from rest_framework import parsers
-from rest_framework import renderers
+from rest_framework import parsers, renderers
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND,
-)
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST,
+                                   HTTP_404_NOT_FOUND)
 from rest_framework.views import APIView
 
 from .models import User
 from .renderers import UserJSONRenderer
-from .serializers import (
-    LoginSerializer,
-    LogoutSerializer,
-    RegistrationUserSerializer,
-    UserListSerializer,
-    UserSerializer,
-)
+from .serializers import (LoginSerializer, LogoutSerializer,
+                          RegistrationUserSerializer, UserListSerializer,
+                          UserSerializer)
 
 
 class RegistrationApi(APIView):
@@ -72,7 +63,7 @@ class UserList(ListAPIView):
         queryset = User.objects.prefetch_related("img").all()
         users: list[dict[str, Any]] = []
         for user in queryset:
-            photos = user.img.all().first() or user.img.all().last()
+            photo = user.img.all().first() or user.img.all().last()
             users.append(
                 {
                     "id": user.id,
@@ -81,7 +72,7 @@ class UserList(ListAPIView):
                     "surname": user.surname,
                     "sex": user.sex,
                     "birthday": user.birthday,
-                    "photo": photos,
+                    "photo": photo.photo,
                 }
             )
         return users
