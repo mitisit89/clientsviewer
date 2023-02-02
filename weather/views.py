@@ -1,5 +1,6 @@
 import requests
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -40,9 +41,11 @@ class WeatherHandler:
 class GetWeather(APIView):
     """
     Endpoint receives a json object containing a user-defined date in format year-month-day and a city name.
-    In response comes a json object containing weather data from external api
+    In response comes a json object containing weather data from external api.
+    Login requered.
     """
 
+    permission_classes = (IsAuthenticated,)
     serializer_class = PostWeatherSerializer
 
     def post(self, request: Request, format="json") -> Response:

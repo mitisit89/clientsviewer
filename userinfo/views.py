@@ -1,7 +1,6 @@
 from typing import Any
 
-from drf_spectacular.utils import extend_schema
-from rest_framework import parsers, renderers
+from rest_framework import parsers
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -60,7 +59,7 @@ class LoginApi(APIView):
 
 
 class UserList(ListAPIView):
-    """Get all users"""
+    """Get all users. Login requered"""
 
     permission_classes = (IsAuthenticated,)
     renderer_classes = (UserJSONRenderer,)
@@ -95,7 +94,7 @@ class UpdateUser(APIView):
     def patch(
         self, request: Request, *args: type(Any), **kwargs: dict[str, Any]
     ) -> Response:
-        """Partial update user data"""
+        """Partial update user data.Login requered"""
         # fix schema add user in schema
         serializer_data = request.data
         serializer = UserSerializer(request.user, data=serializer_data, partial=True)
@@ -115,7 +114,7 @@ class DeleteUser(APIView):
             raise HTTP_404_NOT_FOUND
 
     def delete(self, request: Request, email) -> Response:
-        """Delete user by email"""
+        """Delete user by email.Login requered"""
         to_delete = self.get_object(email)
         to_delete.delete()
         return Response(status=HTTP_204_NO_CONTENT)
