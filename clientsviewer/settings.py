@@ -1,8 +1,10 @@
 from pathlib import Path
 
+from django.core.management.utils import get_random_secret_key
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-u)wp0p+2p*s%n44natue3-!sc-ja0budr(=*)%2y@x$_65(@sk"
+SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
